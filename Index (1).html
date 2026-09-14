@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotly — Discover What's Nearby</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+<!-- WELCOME SCREEN -->
+<div id="welcomeScreen" class="welcome-screen">
+    <div class="welcome-logo">
+        spotly<span>.</span>
+    </div>
+
+    <p class="welcome-tagline">
+        Everything local. One smart place.
+    </p>
+
+    <div class="welcome-card">
+        <div class="welcome-pin">
+            <i data-lucide="map-pin"></i>
+        </div>
+
+        <h1>
+            Discover what's
+            <span>happening nearby.</span>
+        </h1>
+
+        <p>
+            Find local businesses, offers, events and communities
+            around you — powered by location and smart recommendations.
+        </p>
+
+        <div class="role-selection">
+            <button class="role-card" onclick="goToUserRegistration()">
+                <div class="role-icon">
+                    <i data-lucide="user"></i>
+                </div>
+                <div>
+                    <strong>Continue as User</strong>
+                    <small>Explore • Save • Discover</small>
+                </div>
+                <i class="role-arrow" data-lucide="arrow-right"></i>
+            </button>
+
+            <button class="role-card" onclick="enterBusiness()">
+                <div class="role-icon">
+                    <i data-lucide="store"></i>
+                </div>
+                <div>
+                    <strong>Business Owner</strong>
+                    <small>Advertise • Grow • Analyze</small>
+                </div>
+                <i class="role-arrow" data-lucide="arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="welcome-footer">
+        Built for local communities • Spotly Demo
+    </div>
+</div>
+
+<!-- USER DETAIL REGISTRATION -->
+<div id="userRegisterScreen" class="welcome-screen hidden">
+    <div class="welcome-logo">
+        spotly<span>.</span>
+    </div>
+
+    <div class="auth-card">
+        <button type="button" class="back-link" onclick="backToWelcome()">
+            <i data-lucide="arrow-left"></i> Back
+        </button>
+
+        <h1>Create your account</h1>
+        <p>
+            Tell us a little about yourself to personalize Spotly
+            and start discovering what's nearby.
+        </p>
+
+        <form class="auth-form" id="userRegisterForm" onsubmit="submitUserRegistration(event)">
+            <input type="text" id="regName" placeholder="Full name" required>
+            <input type="email" id="regEmail" placeholder="Email address" required>
+            <input type="tel" id="regPhone" placeholder="Phone number" required>
+
+            <select id="regCity" required>
+                <option value="" disabled selected>Select your city / area</option>
+                <option>Punjabi Bagh</option>
+                <option>Tilak Nagar</option>
+                <option>Janakpuri</option>
+                <option>Dwarka</option>
+                <option>Rajouri Garden</option>
+                <option>Connaught Place</option>
+                <option>Lajpat Nagar</option>
+                <option>Other</option>
+            </select>
+
+            <input type="password" id="regPassword" placeholder="Create a password" required minlength="6">
+
+            <button type="submit" class="primary-button full-button">
+                Create account
+                <i data-lucide="arrow-right"></i>
+            </button>
+        </form>
+    </div>
+
+    <div class="welcome-footer">
+        Built for local communities • Spotly Demo
+    </div>
+</div>
+
+<!-- BUSINESS REGISTRATION -->
+<div id="businessRegisterScreen" class="welcome-screen hidden">
+    <div class="welcome-logo">
+        spotly<span>.</span>
+    </div>
+
+    <div class="auth-card">
+        <button type="button" class="back-link" onclick="backToWelcomeFromBusiness()">
+            <i data-lucide="arrow-left"></i> Back
+        </button>
+
+        <h1>Register your business</h1>
+        <p>
+            Create a free business account to get listed on Spotly
+            and start reaching local customers.
+        </p>
+
+        <div id="businessRegisterError" class="register-error hidden"></div>
+
+        <form class="auth-form" id="businessRegisterForm" onsubmit="submitBusinessRegistration(event)">
+            <input type="text" id="bizName" placeholder="Business name" required>
+            <input type="text" id="bizOwnerName" placeholder="Owner name" required>
+            <input type="email" id="bizEmail" placeholder="Business email" required>
+            <input type="tel" id="bizPhone" placeholder="Phone number" required>
+
+            <select id="bizCategory" required>
+                <option value="" disabled selected>Select category</option>
+                <option>Restaurants</option>
+                <option>Cafés</option>
+                <option>Salons & Beauty</option>
+                <option>Shopping</option>
+                <option>Fitness & Gyms</option>
+                <option>Events</option>
+                <option>Local Offers</option>
+                <option>Services</option>
+                <option>Entertainment</option>
+            </select>
+
+            <input type="text" id="bizAddress" placeholder="Business address / location" required>
+            <input type="password" id="bizPassword" placeholder="Create a password" required minlength="6">
+
+            <button type="submit" class="primary-button full-button" id="businessRegisterSubmitBtn">
+                Register business
+                <i data-lucide="arrow-right"></i>
+            </button>
+        </form>
+    </div>
+
+    <div class="welcome-footer">
+        Built for local communities • Spotly Demo
+    </div>
+</div>
+
+<!-- USER APP -->
+<div id="userApp" class="hidden">
+
+    <!-- HEADER -->
+    <header class="main-header">
+        <div class="logo" onclick="showHome()">
+            spotly<span>.</span>
+        </div>
+
+        <div class="search-box" id="searchBox">
+            <i data-lucide="search"></i>
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search places, offers, events..."
+                oninput="searchBusinesses()"
+            >
+        </div>
+
+        <div class="header-actions">
+            <button onclick="showNotifications()">
+                <i data-lucide="bell"></i>
+            </button>
+            <button class="profile-button" onclick="showProfile()">
+                <i data-lucide="user"></i>
+            </button>
+            <button class="mobile-menu-button" onclick="toggleMobileMenu()">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- USER CONTENT -->
+    <main class="user-main">
+
+        <!-- HOME -->
+        <section id="homePage">
+            <div class="hero">
+                <div class="hero-content">
+                    <div class="location-label">
+                        <i data-lucide="map-pin"></i>
+                        <span id="locationText">Delhi, India</span>
+                        <span>⌄</span>
+                    </div>
+
+                    <h1>
+                        Find your next
+                        <span>local favorite.</span>
+                    </h1>
+
+                    <p>
+                        Restaurants, events, offers and more —
+                        all within your preferred radius.
+                    </p>
+
+                    <button class="primary-button" onclick="showHome()">
+                        Explore nearby
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+
+                <div class="hero-visual">
+                    <div class="circle circle-one"></div>
+                    <div class="circle circle-two"></div>
+
+                    <div class="hero-location-pin">
+                        <i data-lucide="map-pin"></i>
+                    </div>
+
+                    <div class="weather-card" id="weatherCard">
+                        <div class="weather-main">
+                            <span class="weather-icon" id="weatherIcon">☁️</span>
+                            <div>
+                                <strong id="weatherTemp">--°C</strong>
+                                <small id="weatherCondition">Loading Delhi weather...</small>
+                            </div>
+                        </div>
+                        <div class="weather-meta">
+                            <span>📍 Delhi</span>
+                            <span id="weatherFeels">Feels like --°C</span>
+                        </div>
+                    </div>
+
+                    <div class="nearby-counter">
+                        <span class="live-dot">● Live</span>
+                        <strong id="nearbyCount">127</strong>
+                        <small>spots near you</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORIES -->
+            <div class="category-section">
+                <div class="section-title">
+                    <div>
+                        <span class="eyebrow">EXPLORE</span>
+                        <h2>Browse Categories</h2>
+                    </div>
+                </div>
+
+                <div class="category-container">
+                    <button class="category-btn" data-category="Restaurants" onclick="filterCategory('Restaurants')"><span>🍽️</span> Restaurants</button>
+                    <button class="category-btn" data-category="Cafés" onclick="filterCategory('Cafés')"><span>☕</span> Cafés</button>
+                    <button class="category-btn" data-category="Salons & Beauty" onclick="filterCategory('Salons & Beauty')"><span>✂️</span> Salons & Beauty</button>
+                    <button class="category-btn" data-category="Shopping" onclick="filterCategory('Shopping')"><span>🛍️</span> Shopping</button>
+                    <button class="category-btn" data-category="Fitness & Gyms" onclick="filterCategory('Fitness & Gyms')"><span>🏋️</span> Fitness & Gyms</button>
+                    <button class="category-btn" data-category="Events" onclick="filterCategory('Events')"><span>🎟️</span> Events</button>
+                    <button class="category-btn" data-category="Local Offers" onclick="filterCategory('Local Offers')"><span>🏷️</span> Local Offers</button>
+                    <button class="category-btn" data-category="Services" onclick="filterCategory('Services')"><span>🛠️</span> Services</button>
+                    <button class="category-btn" data-category="Entertainment" onclick="filterCategory('Entertainment')"><span>🎵</span> Entertainment</button>
+                </div>
+            </div>
+
+            <!-- DELHI AREAS -->
+            <div class="area-section">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">DISCOVER BY AREA</span>
+                        <h2>Explore Delhi Areas</h2>
+                        <p>Choose an area to find shops and local places nearby</p>
+                    </div>
+                </div>
+
+                <div class="area-container" id="areaContainer">
+                    <button class="area-chip active" data-area="All" onclick="filterArea('All', this)">📍 All Delhi</button>
+                    <button class="area-chip" data-area="Punjabi Bagh" onclick="filterArea('Punjabi Bagh', this)">🏙️ Punjabi Bagh</button>
+                    <button class="area-chip" data-area="Tilak Nagar" onclick="filterArea('Tilak Nagar', this)">🛍️ Tilak Nagar</button>
+                    <button class="area-chip" data-area="Janakpuri" onclick="filterArea('Janakpuri', this)">🏠 Janakpuri</button>
+                    <button class="area-chip" data-area="Dwarka" onclick="filterArea('Dwarka', this)">✈️ Dwarka</button>
+                    <button class="area-chip" data-area="Rajouri Garden" onclick="filterArea('Rajouri Garden', this)">✨ Rajouri Garden</button>
+                    <button class="area-chip" data-area="Connaught Place" onclick="filterArea('Connaught Place', this)">🏛️ Connaught Place</button>
+                    <button class="area-chip" data-area="Lajpat Nagar" onclick="filterArea('Lajpat Nagar', this)">🛒 Lajpat Nagar</button>
+                </div>
+            </div>
+
+            <!-- RECOMMENDED -->
+            <div class="section-block">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">AI PICKS • NEAR YOU</span>
+                        <h2 id="recommendedTitle">Recommended in Delhi</h2>
+                        <p>Based on your interests and location</p>
+                    </div>
+
+                    <button class="text-button" onclick="showHome()">
+                        See all
+                        <i data-lucide="chevron-right"></i>
+                    </button>
+                </div>
+
+                <div id="businessGrid" class="business-grid"></div>
+            </div>
+        </section>
+
+        <!-- CATEGORY PAGE -->
+        <section id="categoryPage" class="hidden">
+            <button class="back-button" onclick="showHome()">
+                <i data-lucide="arrow-left"></i>
+                Back to discovery
+            </button>
+
+            <span class="eyebrow">DISCOVER LOCAL</span>
+            <h1 id="categoryTitle">Restaurants</h1>
+            <p class="page-description">Places and opportunities near you</p>
+
+            <div id="categoryGrid" class="business-grid"></div>
+        </section>
+
+        <!-- DETAIL PAGE -->
+        <section id="detailPage" class="hidden">
+            <button class="back-button" onclick="showHome()">
+                <i data-lucide="arrow-left"></i>
+                Back to discovery
+            </button>
+
+            <div id="detailContent"></div>
+        </section>
+
+        <!-- SOCIAL PAGE -->
+        <section id="socialPage" class="hidden">
+            <button class="back-button" onclick="showHome()">
+                <i data-lucide="arrow-left"></i>
+                Back to discovery
+            </button>
+            <div class="social-header">
+                <div>
+                    <span class="eyebrow">COMMUNITY</span>
+                    <h1>Local Social</h1>
+                    <p>See what people are sharing around you</p>
+                </div>
+            </div>
+            <div class="social-feed">
+                <div class="empty-state">
+                    <div>💬</div>
+                    <h3>No social posts yet</h3>
+                    <p>Be the first to post about local spots!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROFILE -->
+        <section id="profilePage" class="hidden">
+            <div class="simple-page">
+                <span class="eyebrow">ACCOUNT</span>
+                <h1>My Profile</h1>
+
+                <div class="profile-panel">
+                    <div class="profile-avatar">HK</div>
+                    <h2 id="profileName">Spotly User</h2>
+                    <p>user@spotly.app</p>
+                    <hr>
+
+                    <div class="profile-option" onclick="showSaved()" style="cursor: pointer;">
+                        <i data-lucide="heart"></i> Saved Places
+                    </div>
+                    <div class="profile-option" onclick="showNotifications()" style="cursor: pointer;">
+                        <i data-lucide="bell"></i> Notifications
+                    </div>
+                    <div class="profile-option">
+                        <i data-lucide="map-pin"></i> Location Preferences
+                    </div>
+
+                    <button class="logout-button" onclick="logout()">
+                        <i data-lucide="log-out"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- NOTIFICATIONS -->
+        <section id="notificationPage" class="hidden">
+            <div class="simple-page">
+                <span class="eyebrow">UPDATES</span>
+                <h1>Notifications</h1>
+
+                <div class="notification-card">
+                    <div class="notification-icon">🎉</div>
+                    <div>
+                        <strong>New offer near you</strong>
+                        <p>Saffron Courtyard is offering 20% OFF today.</p>
+                    </div>
+                </div>
+
+                <div class="notification-card">
+                    <div class="notification-icon">🎟️</div>
+                    <div>
+                        <strong>Event this weekend</strong>
+                        <p>Weekend House Social starts Saturday at 8 PM.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MOBILE NAV -->
+    <nav class="mobile-bottom-nav">
+        <button onclick="showHome()">
+            <i data-lucide="compass"></i>
+            <span>Discover</span>
+        </button>
+        <button onclick="showSaved()">
+            <i data-lucide="heart"></i>
+            <span>Saved</span>
+        </button>
+        <button onclick="showNotifications()">
+            <i data-lucide="bell"></i>
+            <span>Alerts</span>
+        </button>
+        <button onclick="showProfile()">
+            <i data-lucide="user"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+</div>
+
+<!-- BUSINESS OWNER APP -->
+<div id="businessApp" class="hidden business-app">
+    <header class="business-header">
+        <div class="logo">
+            spotly<span>.</span>
+        </div>
+
+        <div class="business-header-right">
+            <span>
+                <i data-lucide="store"></i> Business Console
+            </span>
+            <button onclick="logout()">
+                <i data-lucide="log-out"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="business-layout">
+        <!-- SIDEBAR -->
+        <aside class="business-sidebar">
+            <div class="business-profile-small">
+                <div class="owner-avatar">SC</div>
+                <div>
+                    <strong>Saffron Courtyard</strong>
+                    <small>✓ Verified business</small>
+                </div>
+            </div>
+
+            <button class="side-nav active" onclick="businessPage('dashboard',this)">
+                <i data-lucide="layout-dashboard"></i> Dashboard
+            </button>
+            <button class="side-nav" onclick="businessPage('ads',this)">
+                <i data-lucide="target"></i> Advertisements
+            </button>
+            <button class="side-nav" onclick="businessPage('createAd',this)">
+                <i data-lucide="plus"></i> Create Advertisement
+            </button>
+            <button class="side-nav" onclick="businessPage('analytics',this)">
+                <i data-lucide="bar-chart-3"></i> Analytics
+            </button>
+            <button class="side-nav" onclick="businessPage('businessProfile',this)">
+                <i data-lucide="store"></i> Business Profile
+            </button>
+            <button class="side-nav" onclick="businessPage('admin',this)">
+                <i data-lucide="shield-check"></i> Admin Panel
+            </button>
+        </aside>
+
+        <!-- BUSINESS MAIN -->
+        <main class="business-main">
+            <!-- DASHBOARD -->
+            <section id="businessDashboard">
+                <div class="business-page-heading">
+                    <div>
+                        <span class="eyebrow">BUSINESS OVERVIEW</span>
+                        <h1>Good afternoon 👋</h1>
+                        <p>Here's how your local presence is performing.</p>
+                    </div>
+                    <button class="primary-button" onclick="businessPageById('createAd')">
+                        <i data-lucide="plus"></i> Create Advertisement
+                    </button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i data-lucide="eye"></i></div>
+                        <small>Views</small>
+                        <strong>24.8K</strong>
+                        <span>+18.4%</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i data-lucide="target"></i></div>
+                        <small>Reach</small>
+                        <strong>18.2K</strong>
+                        <span>+12.1%</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i data-lucide="mouse-pointer-click"></i></div>
+                        <small>Clicks</small>
+                        <strong>3,842</strong>
+                        <span>+24.8%</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i data-lucide="heart"></i></div>
+                        <small>Saves</small>
+                        <strong>1,126</strong>
+                        <span>+31.2%</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="analytics-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <strong>Reach & Clicks</strong>
+                                <small>Last 7 days</small>
+                            </div>
+                            <span>Weekly</span>
+                        </div>
+                        <div class="fake-chart">
+                            <div class="chart-bars">
+                                <div style="height:45%"><span>Mon</span></div>
+                                <div style="height:65%"><span>Tue</span></div>
+                                <div style="height:55%"><span>Wed</span></div>
+                                <div style="height:75%"><span>Thu</span></div>
+                                <div style="height:88%"><span>Fri</span></div>
+                                <div style="height:100%"><span>Sat</span></div>
+                                <div style="height:82%"><span>Sun</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <strong>Location-wise Reach</strong>
+                                <small>Within 5 km</small>
+                            </div>
+                        </div>
+                        <div class="location-list">
+                            <div>
+                                <div><span>Indirapuram</span><b>6,200</b></div>
+                                <div class="progress"><span style="width:82%"></span></div>
+                            </div>
+                            <div>
+                                <div><span>Vaishali</span><b>4,900</b></div>
+                                <div class="progress"><span style="width:68%"></span></div>
+                            </div>
+                            <div>
+                                <div><span>Raj Nagar</span><b>3,500</b></div>
+                                <div class="progress"><span style="width:52%"></span></div>
+                            </div>
+                            <div>
+                                <div><span>Crossings Republik</span><b>2,100</b></div>
+                                <div class="progress"><span style="width:34%"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADS -->
+            <section id="businessAds" class="business-section hidden">
+                <div class="business-page-heading">
+                    <div>
+                        <span class="eyebrow">CAMPAIGNS</span>
+                        <h1>Advertisements</h1>
+                        <p>Manage your hyperlocal advertising campaigns.</p>
+                    </div>
+                    <button class="primary-button" onclick="businessPageById('createAd')">
+                        <i data-lucide="plus"></i> New Advertisement
+                    </button>
+                </div>
+
+                <div class="advertisement-list">
+                    <div class="advertisement-row">
+                        <div class="ad-thumbnail">🍽️</div>
+                        <div class="ad-info">
+                            <strong>Monsoon Dining — 20% OFF</strong>
+                            <small>Restaurants • 5 km radius</small>
+                        </div>
+                        <span class="status-live">LIVE</span>
+                        <strong>18.2K reach</strong>
+                        <button class="outline-button">Manage</button>
+                    </div>
+
+                    <div class="advertisement-row">
+                        <div class="ad-thumbnail">🎉</div>
+                        <div class="ad-info">
+                            <strong>Weekend Rooftop Special</strong>
+                            <small>Events • 3 km radius</small>
+                        </div>
+                        <span class="status-paused">PAUSED</span>
+                        <strong>8.4K reach</strong>
+                        <button class="outline-button">Manage</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CREATE AD -->
+            <section id="createAdPage" class="business-section hidden">
+                <button class="back-button" onclick="businessPageById('dashboard')">
+                    <i data-lucide="arrow-left"></i> Back to dashboard
+                </button>
+
+                <div class="business-page-heading">
+                    <div>
+                        <span class="eyebrow">CAMPAIGN BUILDER</span>
+                        <h1>Create Advertisement</h1>
+                        <p>Reach customers beyond your immediate area.</p>
+                    </div>
+                </div>
+
+                <div class="ad-form-grid">
+                    <div class="form-card">
+                        <label>
+                            Ad Image
+                            <div class="image-upload">
+                                <i data-lucide="image"></i>
+                                <strong>Upload campaign image</strong>
+                                <small>JPG or PNG • Recommended 1200 × 800</small>
+                                <input type="file" accept="image/*">
+                            </div>
+                        </label>
+
+                        <label>
+                            Advertisement Title
+                            <input type="text" placeholder="Example: Weekend 20% OFF">
+                        </label>
+
+                        <label>
+                            Description
+                            <textarea placeholder="Tell nearby customers what makes this offer special"></textarea>
+                        </label>
+
+                        <label>
+                            Offer / Discount
+                            <input type="text" placeholder="20% OFF">
+                        </label>
+                    </div>
+
+                    <div class="form-card">
+                        <label>
+                            Category Target
+                            <select>
+                                <option>Restaurants</option>
+                                <option>Cafés</option>
+                                <option>Shopping</option>
+                                <option>Fitness & Gyms</option>
+                                <option>Events</option>
+                                <option>Local Offers</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            Location Target
+                            <input type="text" value="Indirapuram, Ghaziabad">
+                        </label>
+
+                        <label>
+                            Target Radius
+                            <div class="radius-buttons">
+                                <button onclick="selectRadius(this)">1 km</button>
+                                <button onclick="selectRadius(this)">3 km</button>
+                                <button class="selected" onclick="selectRadius(this)">5 km</button>
+                                <button onclick="selectRadius(this)">10 km</button>
+                            </div>
+                        </label>
+
+                        <label>
+                            Age Group
+                            <select>
+                                <option>All Ages</option>
+                                <option>18–24</option>
+                                <option>18–34</option>
+                                <option>25–44</option>
+                                <option>45+</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            Campaign Duration
+                            <select>
+                                <option>7 Days</option>
+                                <option>14 Days</option>
+                                <option>30 Days</option>
+                                <option>Custom</option>
+                            </select>
+                        </label>
+
+                        <label class="toggle-label">
+                            <span>Campaign Active</span>
+                            <input type="checkbox" checked>
+                        </label>
+
+                        <button class="primary-button full-button" onclick="submitAdvertisement()">
+                            Submit for Approval
+                            <i data-lucide="check"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ANALYTICS -->
+            <section id="businessAnalytics" class="business-section hidden">
+                <div class="business-page-heading">
+                    <div>
+                        <span class="eyebrow">PERFORMANCE</span>
+                        <h1>Analytics</h1>
+                        <p>Understand what drives local engagement.</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <small>Impressions</small>
+                        <strong>42.7K</strong>
+                        <span>↑ 18.4%</span>
+                    </div>
+                    <div class="stat-card">
+                        <small>Reach</small>
+                        <strong>18.2K</strong>
+                        <span>↑ 12.1%</span>
+                    </div>
+                    <div class="stat-card">
+                        <small>Clicks</small>
+                        <strong>3,842</strong>
+                        <span>↑ 24.8%</span>
+                    </div>
+                    <div class="stat-card">
+                        <small>Engagement</small>
+                        <strong>11.8%</strong>
+                        <span>↑ 6.2%</span>
+                    </div>
+                </div>
+
+                <div class="analytics-panel large-chart">
+                    <div class="panel-heading">
+                        <div>
+                            <strong>Reach Trend</strong>
+                            <small>Last 7 days</small>
+                        </div>
+                    </div>
+                    <div class="line-chart">
+                        <svg viewBox="0 0 700 250" preserveAspectRatio="none">
+                            <polyline
+                                points="0,205 100,170 200,185 300,130 400,105 500,55 600,75 700,35"
+                                fill="none"
+                                stroke="#00b894"
+                                stroke-width="5"
+                            />
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BUSINESS PROFILE -->
+            <section id="businessProfile" class="business-section hidden">
+                <div class="business-page-heading">
+                    <div>
+                        <span class="eyebrow">BUSINESS</span>
+                        <h1>Business Profile</h1>
+                    </div>
+                </div>
+
+                <div class="business-profile-card">
+                    <div class="business-cover">
+                        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80" alt="Restaurant">
+                        <div class="large-owner-avatar">SC</div>
+                    </div>
+
+                    <div class="business-profile-info">
+                        <h2>Saffron Courtyard</h2>
+                        <span class="verified">✓ Verified</span>
+                        <p>Modern North Indian dining with rooftop seating.</p>
+
+                        <div class="profile-details">
+                            <div><i data-lucide="map-pin"></i> Raj Nagar, Ghaziabad</div>
+                            <div><i data-lucide="phone"></i> +91 98765 43210</div>
+                            <div><i data-lucide="clock"></i> 11:00 AM – 11:30 PM</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADMIN -->
+            <section id="adminPage" class="business-section hidden">
+                <div class="business-page-heading">
+                    <div>
+                        <span class="eyebrow">PLATFORM CONTROL</span>
+                        <h1>Admin Panel</h1>
+                        <p>Manage businesses, advertisements and platform activity.</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <small>Registered Businesses</small>
+                        <strong>248</strong>
+                        <span>12 pending</span>
+                    </div>
+                    <div class="stat-card">
+                        <small>Advertisements</small>
+                        <strong>1,426</strong>
+                        <span>34 pending</span>
+                    </div>
+                    <div class="stat-card">
+                        <small>Active Users</small>
+                        <strong>18.4K</strong>
+                        <span>↑ 9.2%</span>
+                    </div>
+                    <div class="stat-card">
+                        <small>Platform Activity</small>
+                        <strong>92K</strong>
+                        <span>This month</span>
+                    </div>
+                </div>
+
+                <div class="analytics-panel">
+                    <div class="panel-heading">
+                        <strong>Pending Approvals</strong>
+                        <span>Review Queue</span>
+                    </div>
+
+                    <div class="approval-row">
+                        <div>
+                            <strong>Urban Glow Studio</strong>
+                            <small>Business Registration</small>
+                        </div>
+                        <button class="reject-button">Reject</button>
+                        <button class="approve-button">Approve</button>
+                    </div>
+
+                    <div class="approval-row">
+                        <div>
+                            <strong>Weekend House Social</strong>
+                            <small>Event Registration</small>
+                        </div>
+                        <button class="reject-button">Reject</button>
+                        <button class="approve-button">Approve</button>
+                    </div>
+
+                    <div class="approval-row">
+                        <div>
+                            <strong>Local Edit Campaign</strong>
+                            <small>Advertisement</small>
+                        </div>
+                        <button class="reject-button">Reject</button>
+                        <button class="approve-button">Approve</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast">Saved successfully</div>
+
+<script src="main.js"></script>
+<script>
+    lucide.createIcons();
+</script>
+</body>
+</html>
